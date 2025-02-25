@@ -7,10 +7,11 @@ export const BASE_URL = "http://localhost:9000";
 
 
 const App = () => {
-  const[filteredData,setFilteredData]=useState(null);
+  const [filteredData,setFilteredData]=useState(null);
   const [data,setData] = useState(null);
   const [loading,setLoading] = useState(false); 
   const [error,setError] = useState(null);
+  const [selectedBtn,setSelectedBtn] = useState("all");
   
   
 
@@ -44,6 +45,37 @@ const App = () => {
 
   };
 
+  const filterFood =(type) =>{
+    if(type=="all"){
+      setFilteredData(data);
+      setSelectedBtn("all");
+      return;
+    }
+    const filter = data?.filter((food)=>
+      food.type.toLowerCase().includes(type.toLowerCase()
+    ));
+    setFilteredData(filter);
+    setSelectedBtn(type); 
+  };
+
+  const filterBtns = [
+    {
+      name:"all",
+      type:"all",
+    },
+    {
+      name:"Breakfast",
+      type:"breakfast",
+    },
+    {
+      name:"Lunch",
+      type:"lunch",
+    },
+    {
+      name:"Dinner",
+      type:"dinner",
+    },
+  ];
 
   if(error) return  <div>{error}</div>;
   if(loading) return <div>loading</div>
@@ -63,10 +95,14 @@ const App = () => {
       </TopContainer>
 
       <FilterContainer>
-        <Button>All</Button>
-        <Button>Breakfast</Button>
-        <Button>Lunch</Button>
-        <Button>Dinner</Button>  
+        {
+          filterBtns.map((value)=>(
+          <Button 
+          
+          isSelected={selectedBtn==value.type}
+          
+          key={value.name} onClick={()=>filterFood(value.type)}>{value.name}</Button>))
+        } 
       </FilterContainer>
       
     </Container>
@@ -82,7 +118,7 @@ export const Container = styled.div`
   margin: 0 auto;
 `;
 const TopContainer = styled.div`
-  min-height: 140px;
+  height: 140px;
   display: flex;
   justify-content: space-between;
   padding: 16px;
@@ -98,6 +134,10 @@ const TopContainer = styled.div`
       padding: 0 10px;
     }
   }
+  @media (0<width<600px){
+    flex-direction: column;
+    height: 120px;
+  }
 `;
 const FilterContainer = styled.div`
   display: flex;
@@ -107,9 +147,14 @@ const FilterContainer = styled.div`
   
 `;
 export const Button = styled.button`
-  background-color: #FF4343;
+  background: ${({ isSelected }) => (isSelected ? "#f22f2f" : "#ff4343")};
+  outline: 1px solid ${({ isSelected }) => (isSelected ? "white" : "#ff4343")};
   border-radius: 5px;
   padding: 6px 12px;
   border: none;
   color: white;
+  cursor: pointer;
+  &:hover{
+    background-color: #F22F2F;
+  }
 `;
